@@ -4,7 +4,12 @@ import '../styles/Home.scss';
 const Home = () => {
     return (
         <div className="home">
-            test
+            <div className="inside">
+                <div>
+                    <h1>TrainSystem</h1>
+                    <h3>The future of Train travel</h3>
+                </div>
+            </div>
         </div>
     );
 };

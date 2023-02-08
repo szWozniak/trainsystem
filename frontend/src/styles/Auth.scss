@@ -1,0 +1,26 @@
+.authForm {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color:#314050;
+    padding: 30px;
+    border-radius: 10px;
+
+    & input {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    & input[type="submit"] {
+        background-color: #455d7a;
+        border: 1px solid #455d7a;
+        color: white;
+    }
+}
