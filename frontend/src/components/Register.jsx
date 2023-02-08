@@ -1,15 +1,22 @@
 import React from 'react';
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom"
 
 import '../styles/Auth.scss';
 import Input from './Forms/Input';
 
+import AuthService from '../services/AuthService';
 
 const Register = () => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const navigate = useNavigate();
     
     const onSubmit = (data) => {
-        console.log(data);
+        AuthService.register(data)
+            .then((res) => {
+                if(res.data.status == "err") alert(res.data.err)
+                else navigate("/login")
+            })
     }
 
     return (
