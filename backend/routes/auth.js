@@ -5,7 +5,8 @@ const bcrypt = require("bcrypt")
 
 const sql = require('../db.js');
 
-router.post("/login", async (req, res) => {
+router.post("/login/:cos", async (req, res) => {
+    let cos = req.params.cos 
     if(!req.body.email || !req.body.password) {
         return res.send({ status: "BAD_REQUEST", err: "MISSING_INFORMATION" })
     }
@@ -13,9 +14,19 @@ router.post("/login", async (req, res) => {
     let user = await getByEmail(req.body.email);
     if(user == null) return res.send({ status: "err", err: "INVALID_LOGIN" })
 
+    let token;
+    try {
+        token = jwt.sign(
+            { id: user.id },
+            process.env.SECRET,
+            { expiresIn: "24h" })
+    } catch(err) {
+        return res.send({ status: "err", err: "INTERNAL_ERROR" })
+    }
+
     bcrypt.compare(req.body.password, user.password, (err, isValid) => {
         if(isValid) {
-            return res.send({ status: "OK" })
+            return res.send({ status: "OK", token: token })
         } else {
             return res.send({ status: "err", err: "INVALID_LOGIN" })
         }
@@ -41,12 +52,9 @@ router.post("/register", (req, res) => {
             return res.send({ status: "err", err: "USER_EXISTS" })
         }
 
-        sql.query(`INSERT INTO users (nickname, email, password) VALUES ('${nickname}', '${email}', '${hash}')`, (err, res) => {
-            if(err) return res.send({ status: "err", err: "INTERNAL_ERROR" })
-            return res.send({ status: "OK" })
-        }).catch((err) => {
-            return res.send({ status: "err", err: "INTERNAL_ERROR" })
-        })
+        let created = await createUser(nickname, email, hash)
+        if(created) return res.send({ status: "OK" })
+        else return res.send({ status: "err", err: "INTERNAL_ERROR" })
     }).catch((err) => {
         return res.send({ status: "SERVER_ERROR", err: "ENCRYPTION_ERROR" })
     })
@@ -67,6 +75,17 @@ let getByEmail = (email) => {
         sql.query(`SELECT * FROM users WHERE email = '${email}'`, (err, res) => {
             if(err || res.length == 0) return resolve(null)
             return resolve(res[0])
+        })
+    })
+}
+
+let createUser = (nickname, email, hash) => {
+    return new Promise((resolve, reject) => {
+        sql.query(`INSERT INTO users (nickname, email, password) VALUES ('${nickname}', '${email}', '${hash}')`, (err, res) => {
+            if(err) return resolve(false)
+            return resolve(true)
+        }).catch((err) => {
+            return resolve(false)
         })
     })
 }
