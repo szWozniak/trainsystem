@@ -1,21 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserService from '../services/UserService';
+import { UserContext } from './Main';
 
 const Profile = () => {
     const navigate = useNavigate();
-
-    const [user, setUser] = useState({});
+    const { user } = useContext(UserContext);
 
     useEffect(() => {
-        let token = localStorage.getItem("token");
-        if(token == null) return navigate("/login");
+        if(user == null) return navigate("/login");
+    }, [user]);
 
-        UserService.getProfile().then((res) => {
-            if(res.data.status != "OK") return navigate("/login");
-            setUser(res.data.user)
-        })
-    }, [])
+    if(user == null) return (<></>)
 
     return (
         <div>

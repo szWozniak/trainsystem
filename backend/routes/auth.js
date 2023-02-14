@@ -5,8 +5,7 @@ const bcrypt = require("bcrypt")
 
 const sql = require('../db.js');
 
-router.post("/login/:cos", async (req, res) => {
-    let cos = req.params.cos 
+router.post("/login", async (req, res) => {
     if(!req.body.email || !req.body.password) {
         return res.send({ status: "BAD_REQUEST", err: "MISSING_INFORMATION" })
     }

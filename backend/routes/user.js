@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const sql = require('../db.js');
 
 router.get("/profile", (req, res) => {
+    if(!req.headers.authorization) return res.send({ status: "err", err: "UNAUTHORIZED"})
     let token = req.headers.authorization.split(" ")[1];
     jwt.verify(token, process.env.SECRET, async (err, decoded) => {
         if(err || !decoded.id) return res.send({ status: "err", err: "UNAUTHORIZED"})
