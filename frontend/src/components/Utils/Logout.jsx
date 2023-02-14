@@ -1,12 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext    } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../Main';
 
 const Logout = () => {
     const navigate = useNavigate();
+    const { updateUser } = useContext(UserContext);
 
     useEffect(() => {
         localStorage.removeItem("token");
-        navigate("/login");
+        updateUser().then(() => {
+            navigate("/login");
+        })
     }, [])
 
     return (<></>);
